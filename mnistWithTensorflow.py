@@ -33,11 +33,11 @@ class MNISTModel(Model):
         self.dense1 = Dense(128, activation='relu')
         self.dense2 = Dense(10, activation='softmax')
 
-        def call(self, x):
-            x1 = self.conv1(x)
-            x2 = self.flatten(x1)
-            x3 = self.dense1(x2)
-            return self.dense2(x3)
+    def call(self, x):
+        x1 = self.conv1(x)
+        x2 = self.flatten(x1)
+        x3 = self.dense1(x2)
+        return self.dense2(x3)
 
 
 loss_function = tf.keras.losses.SparseCategoricalCrossentropy()
@@ -80,3 +80,27 @@ x_test =x_test[..., tf.newaxis]
 
 train_data = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(10000).batch(32)
 test_data = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(32)
+
+# Training loop setup:
+epochs = 5
+
+for epoch in range(epochs):
+    for train_inputs, train_labels in train_data:
+        train_step(train_inputs, train_labels)
+
+    for test_inputs, test_labels in test_data:
+        test_step(test_inputs, test_labels)
+
+    template = 'Epoch {}, Train Loss: {}, Train Accuracy: {}, Test Loss: {}, Test Accuracy: {}'
+    print(template.format(
+        epoch + 1,
+        train_loss.result(),
+        train_accuracy.result(),
+        test_loss.result(),
+        test_accuracy.result()
+    ))
+
+    train_loss.reset_state()
+    train_accuracy.reset_state()
+    test_loss.reset_state()
+    test_accuracy.reset_state()
