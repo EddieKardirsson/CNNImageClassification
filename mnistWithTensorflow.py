@@ -71,3 +71,12 @@ def test_step(inputs, outputs):
 
     test_loss(loss)
     test_accuracy(outputs, predictions)
+
+
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+x_train =x_train[..., tf.newaxis]
+x_test =x_test[..., tf.newaxis]
+
+train_data = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(10000).batch(32)
+test_data = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(32)
